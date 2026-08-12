@@ -1,0 +1,22 @@
+--- /home/elaina/xjtmp/orig/linux-7.1.8/arch/x86/entry/syscall_64.c	2026-08-10 02:26:58.000000000 +0800
++++ /home/elaina/linux-src/linux-7.1.8/arch/x86/entry/syscall_64.c	2026-08-13 06:57:14.881456849 +0800
+@@ -8,6 +8,7 @@
+ #include <linux/entry-common.h>
+ #include <linux/nospec.h>
+ #include <asm/syscall.h>
++#include <asm/xapi.h>
+ 
+ #define __SYSCALL(nr, sym) extern long __x64_##sym(const struct pt_regs *);
+ #define __SYSCALL_NORETURN(nr, sym) extern long __noreturn __x64_##sym(const struct pt_regs *);
+@@ -91,7 +92,10 @@
+ 	instrumentation_begin();
+ 	add_random_kstack_offset();
+ 
+-	if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr != -1) {
++	/* XJ380 XAPI custom syscalls (7380–7470), non-GUI subset. */
++	if (nr >= 7380 && nr <= 7470) {
++		regs->ax = xapi_handle_syscall(regs, nr);
++	} else if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr != -1) {
+ 		/* Invalid system call, but still a system call. */
+ 		regs->ax = __x64_sys_ni_syscall(regs);
+ 	}
