@@ -1,7 +1,7 @@
 --- /home/elaina/xjtmp/orig/linux-7.1.8/arch/x86/kernel/Makefile	2026-08-10 02:26:58.000000000 +0800
-+++ /home/elaina/linux-src/linux-7.1.8/arch/x86/kernel/Makefile	2026-08-13 06:47:39.417556876 +0800
++++ /home/elaina/linux-src/linux-7.1.8/arch/x86/kernel/Makefile	2026-11-01 00:30:00.000000000 +0800
 @@ -180,3 +180,4 @@
  	obj-$(CONFIG_MMCONF_FAM10H)	+= mmconf-fam10h_64.o
  	obj-y				+= vsmp_64.o
  endif
-+obj-y += xapi.o
++obj-y += xapi.o xapi_gui.o

@@ -276,9 +276,8 @@ static u64 xapi_map_memory(u64 addr, u64 len, u64 prot)
 
 	if (!addr || !len || len > TASK_SIZE)
 		return XAPI_ERR;
-	ret = do_mmap(NULL, addr, len, (int)prot,
-		      MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,
-		      0, 0, NULL, NULL);
+	ret = vm_mmap(NULL, addr, len, (unsigned long)prot,
+		      MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, 0);
 	if (IS_ERR_VALUE(ret))
 		return XAPI_ERR;
 	return ret;
@@ -474,6 +473,10 @@ long xapi_handle_syscall(const struct pt_regs *regs, unsigned int nr)
 			a6 = (u64)*(unsigned long __user *)(sp + 8);
 		user_access_end();
 	}
+
+	/* graphic subset (7392-7463) is handled by xapi_gui.c */
+	if (nr >= 7392 && nr <= 7463)
+		return xapi_gui_handle_syscall(regs, nr);
 
 	switch (nr) {
 	case XAPI_OUTPUT:        return xapi_output(a1);
